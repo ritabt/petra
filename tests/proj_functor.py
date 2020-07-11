@@ -45,14 +45,12 @@ legion_logical_partition_t = pt.StructType(
     }
 )
 
-# what's the type of point_data
 legion_domain_point_t = pt.StructType(
     {"dim": pt.Int64_t, "point_data": pt.ArrayType(coord_t, LEGION_MAX_DIM)}
 )
 
 legion_domain_t = pt.StructType({"is_id": realm_id_t, "dim": pt.Int64_t})
 
-# what's the type of x?
 legion_point_1d_t = pt.StructType({"x": pt.ArrayType(coord_t, DIM)})
 
 legion_index_space_t = pt.StructType(
@@ -84,7 +82,7 @@ program.add_func_decl(
     legion_logical_region_t,
 )
 
-# Define variables: 
+# Define variables:
 runtime = pt.Symbol(legion_runtime_t, "runtime")
 parent = pt.Symbol(legion_logical_partition_t, "parent")
 point = pt.Symbol(legion_domain_point_t, "point")
@@ -120,7 +118,7 @@ program.add_func(
             pt.Assign(
                 pt.Var(point1d_x_plus_1),
                 pt.SetElement(
-                    pt.Var(point1d_x_plus_1), pt.Var(point1d_x_plus_1_x), name ="x"
+                    pt.Var(point1d_x_plus_1), pt.Var(point1d_x_plus_1_x), name="x"
                 ),
             ),
             pt.DefineVar(
@@ -147,9 +145,7 @@ class ProjectionFunctor(unittest.TestCase):
         self.engine = program.compile()
 
         proj_functor = self.engine.get_function_address("proj_functor")
-        self.proj_functor = cast(
-            Callable[[], int], CFUNCTYPE(c_int32)(proj_functor)
-        )
+        self.proj_functor = cast(Callable[[], int], CFUNCTYPE(c_int32)(proj_functor))
 
     def test_proj_functor(self) -> None:
         self.assertEqual(self.proj_functor(), 6)
