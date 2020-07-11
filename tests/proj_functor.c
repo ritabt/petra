@@ -5,17 +5,19 @@
 //     my_task(p[x + 1])                                                                                                                                                                     
 legion_logical_region_t my_projection_functor( 
       legion_runtime_t runtime, 
-      legion_logical_partition_t parent, // p                                                                                                                                                
+      legion_logical_partition_t parent, // p // struct                                                                                                                                               
       legion_domain_point_t point, // x                                                                                                                                                      
       legion_domain_t domain) // D                                                                                                                                                           
 { 
   // legion_point_1d_t is a struct
   // legion_point_1d_t.x is an array
   // legion_logical_partition_t is an array
-  // legion_domain_point_t is an int ?
-  // legion_domain_t is an array ?
-  // legion_runtime_t is an int ?
+  // legion_domain_point_t is a struct 
+  // legion_domain_t is an array 
+  // legion_runtime_t is a struct // opaque
+  // return type: legion_logical_region_t is a struct 
   legion_point_1d_t point1d = legion_domain_point_get_point_1d(point); 
+  // int 64
   coord_t x = point1d.x[0]; 
   coord_t x_plus_1 = x + 1; 
   legion_point_1d_t point1d_x_plus_1; 
