@@ -109,6 +109,7 @@ program.add_func(
                 x, pt.GetElement(pt.GetElement(pt.Var(point1d), name="x"), idx=0)
             ),
             pt.DefineVar(x_plus_1, pt.Add(pt.Var(x), pt.Int64(1))),
+            # Temporary array to change point1d_x_plus_1.x[0]
             pt.DefineVar(point1d_x_plus_1_x),
             pt.Assign(
                 pt.Var(point1d_x_plus_1_x),
@@ -147,5 +148,30 @@ class ProjectionFunctor(unittest.TestCase):
         proj_functor = self.engine.get_function_address("proj_functor")
         self.proj_functor = cast(Callable[[], int], CFUNCTYPE(c_int32)(proj_functor))
 
+        # self.proj_functor = cast(
+        #     Callable[[int, int, int, int], int],
+        #     CFUNCTYPE(c_int32, c_int32, c_int32, c_int32, c_int32)(proj_functor),
+        # )
+
+
+        # self.proj_functor = cast(
+        #     Callable[
+        #         [
+        #             legion_runtime_t,
+        #             legion_logical_partition_t,
+        #             legion_domain_point_t,
+        #             legion_domain_t,
+        #         ],
+        #         legion_logical_region_t,
+        #     ],
+        #     CFUNCTYPE(
+        #         legion_runtime_t,
+        #         legion_logical_partition_t,
+        #         legion_domain_point_t,
+        #         legion_domain_t,
+        #         legion_logical_region_t,
+        #     )(proj_functor)
+        # )
+
     def test_proj_functor(self) -> None:
-        self.assertEqual(self.proj_functor(), 6)
+        self.assertEqual(self.proj_functor(), 0)
