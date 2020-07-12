@@ -149,12 +149,6 @@ class ProjectionFunctor(unittest.TestCase):
         self.proj_functor = cast(Callable[[], int], CFUNCTYPE(c_int32)(proj_functor))
 
         # self.proj_functor = cast(
-        #     Callable[[int, int, int, int], int],
-        #     CFUNCTYPE(c_int32, c_int32, c_int32, c_int32, c_int32)(proj_functor),
-        # )
-
-
-        # self.proj_functor = cast(
         #     Callable[
         #         [
         #             legion_runtime_t,
