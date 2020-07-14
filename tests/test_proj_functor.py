@@ -14,17 +14,16 @@ MAX_DOMAIN_DIM = 2 * LEGION_MAX_DIM
 DIM = 1
 
 # Define types:
-legion_region_tree_id_t = pt.Int64_t
-legion_index_partition_id_t = pt.Int64_t
-legion_index_tree_id_t = pt.Int64_t
-legion_type_tag_t = pt.Int64_t
-legion_field_space_id_t = pt.Int64_t
+legion_region_tree_id_t = pt.Int32_t
+legion_index_partition_id_t = pt.Int32_t
+legion_index_tree_id_t = pt.Int32_t
+legion_type_tag_t = pt.Int32_t
+legion_field_space_id_t = pt.Int32_t
 coord_t = pt.Int64_t
-legion_index_space_id_t = pt.Int64_t
-# is realm an int
+legion_index_space_id_t = pt.Int32_t
 realm_id_t = pt.Int64_t
 
-# how can I define void*
+# Add void type in Types
 legion_runtime_t = pt.StructType({"impl": pt.PointerType(pt.Int64_t)})
 
 legion_index_partition_t = pt.StructType(
@@ -46,10 +45,16 @@ legion_logical_partition_t = pt.StructType(
 )
 
 legion_domain_point_t = pt.StructType(
-    {"dim": pt.Int64_t, "point_data": pt.ArrayType(coord_t, LEGION_MAX_DIM)}
+    {"dim": pt.Int32_t, "point_data": pt.ArrayType(coord_t, LEGION_MAX_DIM)}
 )
 
-legion_domain_t = pt.StructType({"is_id": realm_id_t, "dim": pt.Int64_t})
+legion_domain_t = pt.StructType(
+    {
+        "is_id": realm_id_t, 
+        "dim": pt.Int32_t, 
+        "rect_data": pt.ArrayType(coord_t, MAX_DOMAIN_DIM)
+    }
+)
 
 legion_point_1d_t = pt.StructType({"x": pt.ArrayType(coord_t, DIM)})
 
@@ -94,7 +99,7 @@ point1d_x_plus_1 = pt.Symbol(legion_point_1d_t, "point1d_x_plus_1")
 domain_point_x_plus_1 = pt.Symbol(legion_domain_point_t, "domain_point_x_plus_1")
 result = pt.Symbol(legion_logical_region_t, "result")
 point1d_x_plus_1_x = pt.Symbol(pt.ArrayType(coord_t, DIM), "point1d_x_plus_1_x")
-
+temp = pt.Symbol
 
 program.add_func(
     "proj_functor",
@@ -105,6 +110,7 @@ program.add_func(
             pt.DefineVar(
                 point1d, pt.Call("legion_domain_point_get_point_1d", [pt.Var(point)])
             ),
+            pt.DefineVar()  #Fix this 
             pt.DefineVar(
                 x, pt.GetElement(pt.GetElement(pt.Var(point1d), name="x"), idx=0)
             ),

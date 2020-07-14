@@ -16,8 +16,8 @@ from .symbol import Symbol
 from .validate import ValidateError
 from .truth import And, Eq, Gt, Gte, Lt, Lte, Neq, Not, Or
 from .type import (
-    Type,
     Bool_t,
+    Void_t,
     Float32_t,
     Float64_t,
     Int8_t,
