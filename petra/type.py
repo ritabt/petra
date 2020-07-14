@@ -97,6 +97,22 @@ class BoolType(ValueType[bool]):
         return ir.IntType(1)
 
 
+class VoidType(Type):
+    """
+    A void type.
+    """
+
+    def __init__(self) -> None:
+        super().__init__("Void_t")
+
+    def validate(self, value: None) -> None:
+        pass
+
+    def llvm_type(self) -> ir.Type:
+        # return ir.VoidType()
+        return ir.IntType(8)
+
+
 class PointerType(Type):
     """
     A pointer type.
@@ -156,3 +172,4 @@ Float32_t = FloatType(32)
 Float64_t = FloatType(64)
 
 Bool_t = BoolType()
+Void_t = VoidType()
