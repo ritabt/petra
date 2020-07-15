@@ -50,13 +50,15 @@ legion_domain_point_t = pt.StructType(
 
 legion_domain_t = pt.StructType(
     {
-        "is_id": realm_id_t, 
-        "dim": pt.Int32_t, 
-        "rect_data": pt.ArrayType(coord_t, MAX_DOMAIN_DIM)
+        "is_id": realm_id_t,
+        "dim": pt.Int32_t,
+        "rect_data": pt.ArrayType(coord_t, MAX_DOMAIN_DIM),
     }
 )
 
-legion_point_1d_t = pt.StructType({"x": pt.ArrayType(coord_t, DIM)})
+legion_point_1d_array = pt.ArrayType(coord_t, DIM)
+
+legion_point_1d_t = pt.StructType({"x": legion_point_1d_array})
 
 legion_index_space_t = pt.StructType(
     {
@@ -93,13 +95,13 @@ parent = pt.Symbol(legion_logical_partition_t, "parent")
 point = pt.Symbol(legion_domain_point_t, "point")
 domain = pt.Symbol(legion_domain_t, "domain")
 point1d = pt.Symbol(legion_point_1d_t, "point1d")
+point1d_x = pt.Symbol(legion_point_1d_array, "point1d_x")
 x = pt.Symbol(coord_t, "x")
 x_plus_1 = pt.Symbol(coord_t, "x_plus_1")
 point1d_x_plus_1 = pt.Symbol(legion_point_1d_t, "point1d_x_plus_1")
 domain_point_x_plus_1 = pt.Symbol(legion_domain_point_t, "domain_point_x_plus_1")
 result = pt.Symbol(legion_logical_region_t, "result")
 point1d_x_plus_1_x = pt.Symbol(pt.ArrayType(coord_t, DIM), "point1d_x_plus_1_x")
-temp = pt.Symbol
 
 program.add_func(
     "proj_functor",
@@ -110,12 +112,9 @@ program.add_func(
             pt.DefineVar(
                 point1d, pt.Call("legion_domain_point_get_point_1d", [pt.Var(point)])
             ),
-            pt.DefineVar()  #Fix this 
-            pt.DefineVar(
-                x, pt.GetElement(pt.GetElement(pt.Var(point1d), name="x"), idx=0)
-            ),
+            pt.DefineVar(point1d_x, pt.GetElement(pt.Var(point1d), name="x"),),
+            pt.DefineVar(x, pt.GetElement(pt.Var(point1d_x), idx=0)),
             pt.DefineVar(x_plus_1, pt.Add(pt.Var(x), pt.Int64(1))),
-            # Temporary array to change point1d_x_plus_1.x[0]
             pt.DefineVar(point1d_x_plus_1_x),
             pt.Assign(
                 pt.Var(point1d_x_plus_1_x),
