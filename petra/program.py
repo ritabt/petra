@@ -35,7 +35,12 @@ class Program(object):
         return self
 
     def add_func(
-        self, name: str, args: Tuple[Symbol, ...], t_out: Ftypeout, block: Block,
+        self,
+        name: str,
+        args: Tuple[Symbol, ...],
+        t_out: Ftypeout,
+        block: Block,
+        attributes: Optional[Tuple[str, ...]] = None,
     ) -> Program:
         if name in self.functypes:
             raise Exception("Function %s already exists in program." % name)
@@ -44,7 +49,7 @@ class Program(object):
         self.funcs[name] = ir.Function(
             self.module, convert_func_type(t_in, t_out), name
         )
-        func = Function(name, args, t_out, block, self.functypes)
+        func = Function(name, args, t_out, block, self.functypes, attributes)
         func.codegen(self.module, self.funcs)
         return self
 

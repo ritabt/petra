@@ -28,7 +28,7 @@ class Function(object):
         t_out: Ftypeout,
         block: Block,
         functypes: Dict[str, Tuple[Ftypein, Ftypeout]],
-        attributes: Optional[Tuple[str, ...]] = None
+        attributes: Optional[Tuple[str, ...]] = None,
     ):
         self.name = name
         self.args = args
@@ -72,7 +72,7 @@ class Function(object):
         for i, arg in enumerate(self.args):
             var = builder.alloca(arg.get_type().llvm_type(), name=arg.unique_name())
             if self.attributes is not None:
-                funcs[self.name].args[i].ir._BaseArgument.add_attribute(self.attributes[i])
+                funcs[self.name].args[i].add_attribute(self.attributes[i])
             # FIXME: I'm not sure why I can't get this to type check
             builder.store(funcs[self.name].args[i], var)  # type: ignore
             ctx.vars[arg] = var
