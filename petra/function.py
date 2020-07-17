@@ -64,11 +64,6 @@ class Function(object):
         self.block.typecheck(ctx)
 
     def codegen(self, module: ir.Module, funcs: Dict[str, ir.Function]) -> None:
-        
-        if self.attributes is not None:
-            # to check if attributes are valid:
-            ir.AttributeSet(self.attributes)
-            BaseArgument = ir._BaseArgument(funcs[self.name], funcs[self.name].get_type().llvm_type()) 
 
         block = funcs[self.name].append_basic_block(name="start")
         builder = ir.IRBuilder(block)
@@ -77,7 +72,7 @@ class Function(object):
         for i, arg in enumerate(self.args):
             var = builder.alloca(arg.get_type().llvm_type(), name=arg.unique_name())
             if self.attributes is not None:
-                BaseArgument.add_attribute(self.attributes[i])
+                funcs[self.name].args[i].ir._BaseArgument.add_attribute(self.attributes[i])
             # FIXME: I'm not sure why I can't get this to type check
             builder.store(funcs[self.name].args[i], var)  # type: ignore
             ctx.vars[arg] = var
