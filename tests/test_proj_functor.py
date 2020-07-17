@@ -14,14 +14,14 @@ MAX_DOMAIN_DIM = 2 * LEGION_MAX_DIM
 DIM = 1
 
 # Define types:
-legion_region_tree_id_t = pt.Int32_t
-legion_index_partition_id_t = pt.Int32_t
-legion_index_tree_id_t = pt.Int32_t
-legion_type_tag_t = pt.Int32_t
-legion_field_space_id_t = pt.Int32_t
-coord_t = pt.Int64_t
-legion_index_space_id_t = pt.Int32_t
-realm_id_t = pt.Int64_t
+legion_region_tree_id_t = pt.Int32_t   #unsigned int
+legion_index_partition_id_t = pt.Int32_t   #unsigned int
+legion_index_tree_id_t = pt.Int32_t   #unsigned int
+legion_type_tag_t = pt.Int32_t   #unsigned int
+legion_field_space_id_t = pt.Int32_t   #unsigned int
+coord_t = pt.Int64_t   #long long
+legion_index_space_id_t = pt.Int32_t   #unsigned int
+realm_id_t = pt.Int64_t   #unsigned long long
 
 # Add void type in Types
 legion_runtime_t = pt.StructType({"impl": pt.PointerType(pt.Int64_t)})
@@ -44,14 +44,14 @@ legion_logical_partition_t = pt.StructType(
     }
 )
 
-legion_domain_point_t = pt.StructType(
-    {"dim": pt.Int32_t, "point_data": pt.ArrayType(coord_t, LEGION_MAX_DIM)}
+legion_domain_point_t = pt.StructType(  #dim is an int #change from 32 to 64?
+    {"dim": pt.Int64_t, "point_data": pt.ArrayType(coord_t, LEGION_MAX_DIM)}
 )
 
 legion_domain_t = pt.StructType(
     {
         "is_id": realm_id_t,
-        "dim": pt.Int32_t,
+        "dim": pt.Int64_t,
         "rect_data": pt.ArrayType(coord_t, MAX_DOMAIN_DIM),
     }
 )
@@ -148,6 +148,7 @@ program.add_func(
 
 class ProjectionFunctor(unittest.TestCase):
     def setUp(self) -> None:
+        program.load_library("libtest_proj_functor.so")
         self.engine = program.compile()
 
         proj_functor = self.engine.get_function_address("proj_functor")

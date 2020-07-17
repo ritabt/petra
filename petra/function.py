@@ -5,7 +5,7 @@ This file defines Petra functions.
 import re
 
 from llvmlite import ir
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 from .block import Block
 from .codegen import CodegenContext
@@ -28,11 +28,13 @@ class Function(object):
         t_out: Ftypeout,
         block: Block,
         functypes: Dict[str, Tuple[Ftypein, Ftypeout]],
+        attributes: Optional[Tuple[str, ...]] = None
     ):
         self.name = name
         self.args = args
         self.t_out = t_out
         self.block = block
+        self.attributes = attributes
         self.validate()
         # Initial typecontext should contain arguments
         ctx = TypeContext(functypes, t_out)
@@ -62,12 +64,20 @@ class Function(object):
         self.block.typecheck(ctx)
 
     def codegen(self, module: ir.Module, funcs: Dict[str, ir.Function]) -> None:
+        
+        if self.attributes is not None:
+            # to check if attributes are valid:
+            ir.AttributeSet(self.attributes)
+            BaseArgument = ir._BaseArgument(funcs[self.name], funcs[self.name].get_type().llvm_type()) 
+
         block = funcs[self.name].append_basic_block(name="start")
         builder = ir.IRBuilder(block)
         ctx = CodegenContext(funcs)
         # Treat function arguments as variables declared at the beginning.
         for i, arg in enumerate(self.args):
             var = builder.alloca(arg.get_type().llvm_type(), name=arg.unique_name())
+            if self.attributes is not None:
+                BaseArgument.add_attribute(self.attributes[i])
             # FIXME: I'm not sure why I can't get this to type check
             builder.store(funcs[self.name].args[i], var)  # type: ignore
             ctx.vars[arg] = var
