@@ -90,6 +90,10 @@ program.add_func_decl(
 )
 
 # Define variables:
+runtime_ptr = pt.Symbol(pt.PointerType(legion_runtime_t), "runtime_ptr")
+parent_ptr = pt.Symbol(pt.PointerType(legion_logical_partition_t), "parent_ptr")
+point_ptr = pt.Symbol(pt.PointerType(legion_domain_point_t), "point_ptr")
+domain_ptr = pt.Symbol(pt.PointerType(legion_domain_t), "domain_ptr")
 runtime = pt.Symbol(legion_runtime_t, "runtime")
 parent = pt.Symbol(legion_logical_partition_t, "parent")
 point = pt.Symbol(legion_domain_point_t, "point")
@@ -105,10 +109,14 @@ point1d_x_plus_1_x = pt.Symbol(pt.ArrayType(coord_t, DIM), "point1d_x_plus_1_x")
 
 program.add_func(
     "proj_functor",
-    (runtime, parent, point, domain,),
+    (runtime_ptr, parent_ptr, point_ptr, domain_ptr,),
     legion_logical_region_t,
     pt.Block(
         [
+            pt.DefineVar(runtime, pt.Deref(pt.Var(runtime_ptr))),
+            pt.DefineVar(parent, pt.Deref(pt.Var(parent_ptr))),
+            pt.DefineVar(point, pt.Deref(pt.Var(point_ptr))),
+            pt.DefineVar(domain, pt.Deref(pt.Var(domain_ptr))),
             pt.DefineVar(
                 point1d, pt.Call("legion_domain_point_get_point_1d", [pt.Var(point)])
             ),

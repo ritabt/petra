@@ -4,7 +4,7 @@ This file defines Petra programs.
 
 from __future__ import annotations  # necessary to avoid forward declarations
 from llvmlite import ir, binding
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 from .block import Block
 from .codegen import convert_func_type
