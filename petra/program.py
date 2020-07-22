@@ -18,6 +18,7 @@ class Program(object):
     A Petra program. Petra programs can be codegen'ed to LLVM.
     """
 
+
     llvm_initialized: bool = False
 
     def __init__(self, name: str):
@@ -25,13 +26,22 @@ class Program(object):
         self.functypes: Dict[str, Tuple[Ftypein, Ftypeout]] = dict()
         self.funcs: Dict[str, ir.Function] = dict()
 
-    def add_func_decl(self, name: str, t_in: Ftypein, t_out: Ftypeout) -> Program:
+    def add_func_decl(
+        self, 
+        name: str, 
+        t_in: Ftypein, 
+        t_out: Ftypeout,
+        attributes: Optional[Tuple[str, ...]] = None,
+    ) -> Program:
         if name in self.functypes:
             raise Exception("Function %s already exists in program." % name)
         self.functypes[name] = (t_in, t_out)
         self.funcs[name] = ir.Function(
             self.module, convert_func_type(t_in, t_out), name
         )
+        if attributes is not None:
+                for arg, attribute in zip(self.funcs[name].args, attributes):
+                    arg.add_attribute(attribute)
         return self
 
     def add_func(

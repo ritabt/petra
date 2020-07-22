@@ -78,15 +78,16 @@ legion_logical_region_t = pt.StructType(
 
 # Define functions:
 program.add_func_decl(
-    "legion_domain_point_get_point_1d", (legion_domain_point_t,), legion_point_1d_t
+    "legion_domain_point_get_point_1d", (legion_domain_point_t,), legion_point_1d_t, attributes=("byval",) 
 )
 program.add_func_decl(
-    "legion_domain_point_from_point_1d", (legion_point_1d_t,), legion_domain_point_t
+    "legion_domain_point_from_point_1d", (legion_point_1d_t,), legion_domain_point_t, attributes=("byval",)
 )
 program.add_func_decl(
     "legion_logical_partition_get_logical_subregion_by_color_domain_point",
     (legion_runtime_t, legion_logical_partition_t, legion_domain_point_t,),
     legion_logical_region_t,
+    attributes=("byval", "byval", "byval"),
 )
 
 # Define variables:
