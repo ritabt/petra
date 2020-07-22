@@ -41,7 +41,10 @@ class Program(object):
         )
         if attributes is not None:
             for i in range(len(attributes)):
-                self.funcs[name].args[i].add_attribute(attributes[i])
+                x = self.funcs[name]
+                y: ir.Argument = x.args[i]
+                y.add_attribute(attributes[i])
+                # self.funcs[name].args[i].add_attribute(attributes[i])
             # for arg, attribute in zip(self.funcs[name].args, attributes):
             #     arg.add_attribute(attribute)
         return self

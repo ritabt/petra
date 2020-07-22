@@ -72,8 +72,13 @@ class Function(object):
         for i, arg in enumerate(self.args):
             var = builder.alloca(arg.get_type().llvm_type(), name=arg.unique_name())
             if self.attributes is not None:
-                funcs[self.name].args[i].add_attribute(self.attributes[i])
+                # funcs[self.name].args[i].add_attribute(self.attributes[i])
+                x: ir.Argument = funcs[self.name].args[i]
+                x.add_attribute(self.attributes[i])
             # FIXME: I'm not sure why I can't get this to type check
             builder.store(funcs[self.name].args[i], var)  # type: ignore
             ctx.vars[arg] = var
         self.block.codegen(builder, ctx)
+
+
+##add skipping attribute if none
