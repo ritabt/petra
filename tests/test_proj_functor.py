@@ -45,13 +45,13 @@ legion_logical_partition_t = pt.StructType(
 )
 
 legion_domain_point_t = pt.StructType(  # dim is an int #change from 32 to 64?
-    {"dim": pt.Int64_t, "point_data": pt.ArrayType(coord_t, LEGION_MAX_DIM)}
+    {"dim": pt.Int32_t, "point_data": pt.ArrayType(coord_t, LEGION_MAX_DIM)}
 )
 
 legion_domain_t = pt.StructType(
     {
         "is_id": realm_id_t,
-        "dim": pt.Int64_t,
+        "dim": pt.Int32_t,
         "rect_data": pt.ArrayType(coord_t, MAX_DOMAIN_DIM),
     }
 )
@@ -77,6 +77,8 @@ legion_logical_region_t = pt.StructType(
 )
 
 # Define functions:
+# these functions take pointers
+#everything is a ptr except runtime
 program.add_func_decl(
     "legion_domain_point_get_point_1d", (legion_domain_point_t,), legion_point_1d_t, attributes=("byval",) 
 )
@@ -91,7 +93,7 @@ program.add_func_decl(
 )
 
 # Define variables:
-runtime_ptr = pt.Symbol(pt.PointerType(legion_runtime_t), "runtime_ptr")
+runtime = pt.Symbol(legion_runtime_t, "runtime_ptr")
 parent_ptr = pt.Symbol(pt.PointerType(legion_logical_partition_t), "parent_ptr")
 point_ptr = pt.Symbol(pt.PointerType(legion_domain_point_t), "point_ptr")
 domain_ptr = pt.Symbol(pt.PointerType(legion_domain_t), "domain_ptr")
@@ -138,7 +140,7 @@ program.add_func(
                 result,
                 pt.Call(
                     "legion_logical_partition_get_logical_subregion_by_color_domain_point",
-                    [pt.Deref(pt.Var(runtime_ptr)), pt.Deref(pt.Var(parent_ptr)), pt.Var(domain_point_x_plus_1)],
+                    [pt.Var(runtime), pt.Deref(pt.Var(parent_ptr)), pt.Var(domain_point_x_plus_1)],
                 ),
             ),
             pt.Return(pt.Var(result)),
