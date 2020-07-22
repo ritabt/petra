@@ -71,7 +71,7 @@ class Function(object):
         # Treat function arguments as variables declared at the beginning.
         for i, arg in enumerate(self.args):
             var = builder.alloca(arg.get_type().llvm_type(), name=arg.unique_name())
-            if self.attributes is not None:
+            if self.attributes is not None and self.attributes[i] is not None:
                 # funcs[self.name].args[i].add_attribute(self.attributes[i])
                 x: ir.Argument = funcs[self.name].args[i]
                 x.add_attribute(self.attributes[i])

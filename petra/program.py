@@ -41,6 +41,8 @@ class Program(object):
         )
         if attributes is not None:
             for i in range(len(attributes)):
+                if attributes[i] is None:
+                    pass
                 x = self.funcs[name]
                 y: ir.Argument = x.args[i]
                 y.add_attribute(attributes[i])
