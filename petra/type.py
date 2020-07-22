@@ -113,6 +113,7 @@ class VoidType(Type):
         return ir.IntType(8)
 
 
+# equality to ckeck if the types are the same __eq__
 class PointerType(Type):
     """
     A pointer type.
@@ -121,6 +122,11 @@ class PointerType(Type):
     def __init__(self, pointee: Type) -> None:
         super().__init__("PointerType(%s)" % pointee)
         self.pointee = pointee
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, PointerType):
+            return False
+        return (self.pointee == other.pointee)
 
     def llvm_type(self) -> ir.Type:
         return ir.PointerType(self.pointee.llvm_type())
