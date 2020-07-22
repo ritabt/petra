@@ -40,8 +40,10 @@ class Program(object):
             self.module, convert_func_type(t_in, t_out), name
         )
         if attributes is not None:
-                for arg, attribute in zip(self.funcs[name].args, attributes):
-                    arg.add_attribute(attribute)
+            for i in range(len(attributes)):
+                self.funcs[name].args[i].add_attribute(attributes[i])
+            # for arg, attribute in zip(self.funcs[name].args, attributes):
+            #     arg.add_attribute(attribute)
         return self
 
     def add_func(
