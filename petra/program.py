@@ -32,6 +32,7 @@ class Program(object):
         t_in: Ftypein, 
         t_out: Ftypeout,
         attributes: Optional[Tuple[str, ...]] = None,
+        func_attributes: Optional[Tuple[str, ...]] = None,
     ) -> Program:
         if name in self.functypes:
             raise Exception("Function %s already exists in program." % name)
@@ -43,12 +44,10 @@ class Program(object):
             for i in range(len(attributes)):
                 if attributes[i] is None:
                     continue
-                x = self.funcs[name]
-                y: ir.Argument = x.args[i]
-                y.add_attribute(attributes[i])
-                # self.funcs[name].args[i].add_attribute(attributes[i])
-            # for arg, attribute in zip(self.funcs[name].args, attributes):
-            #     arg.add_attribute(attribute)
+                x: ir.Argument = self.funcs[name].args[i]
+                x.add_attribute(attributes[i])
+        if func_attributes is not None:
+            self.funcs[name].attributes = func_attributes
         return self
 
     def add_func(
@@ -58,6 +57,7 @@ class Program(object):
         t_out: Ftypeout,
         block: Block,
         attributes: Optional[Tuple[str, ...]] = None,
+        func_attributes: Optional[Tuple[str, ...]] = None,
     ) -> Program:
         if name in self.functypes:
             raise Exception("Function %s already exists in program." % name)
@@ -67,6 +67,8 @@ class Program(object):
             self.module, convert_func_type(t_in, t_out), name
         )
         func = Function(name, args, t_out, block, self.functypes, attributes)
+        if func_attributes is not None:
+            func.attributes = func_attributes
         func.codegen(self.module, self.funcs)
         return self
 
@@ -95,6 +97,7 @@ class Program(object):
         # FIXME: Not sure why MyPy can't type check this, maybe a bug
         target = binding.Target.from_default_triple()  # type: ignore
         target_machine = target.create_target_machine()
+        print(self.to_llvm())
         backing_mod = binding.parse_assembly(self.to_llvm())
         engine = binding.create_mcjit_compiler(backing_mod, target_machine)
         engine.finalize_object()
