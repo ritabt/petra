@@ -20,10 +20,11 @@ class Call(Expr):
     A function call expression.
     """
 
-    def __init__(self, name: str, args: List[Expr]):
+    def __init__(self, name: str, args: List[Expr], attributes: Optional[Tuple[str, ...]] = None):
         self.name = name
         self.args = args
         self.t: Union[Tuple[()], Optional[Type]] = None
+        self.attributes = attributes
         self.validate()
 
     def get_type(self) -> Type:
@@ -63,7 +64,9 @@ class Call(Expr):
     def codegen(self, builder: ir.IRBuilder, ctx: CodegenContext) -> ir.Value:
         def codegen_arg(arg: Expr) -> ir.Value:
             return arg.codegen(builder, ctx)
-
         args = tuple(map(codegen_arg, self.args))
         func = ctx.funcs[self.name]
+        if self.attributes is not None :
+            x: ir.CallInstr = func.function_type
+            x.addParamAttr(self.attributes)
         return builder.call(func, args)
