@@ -46,8 +46,8 @@ class Program(object):
                     continue
                 x: ir.Argument = self.funcs[name].args[i]
                 x.add_attribute(attributes[i])
-        if func_attributes is not None:
-            self.funcs[name].attributes = func_attributes
+        # if func_attributes is not None:
+        #     self.funcs[name].attributes = func_attributes
         return self
 
     def add_func(
@@ -106,7 +106,3 @@ class Program(object):
 
     def load_library(self, filename: str) -> None:
         binding.load_library_permanently(filename)
-
-    def add_param_attributes(self, name:str, attributes:Tuple[str, ...]) -> None:
-        x: ir.CallInstr = self.funcs[name].function_type
-        x.addParamAttr(attributes)
