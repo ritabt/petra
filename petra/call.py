@@ -66,7 +66,7 @@ class Call(Expr):
             return arg.codegen(builder, ctx)
         args = tuple(map(codegen_arg, self.args))
         func = ctx.funcs[self.name]
+        output = builder.call(func, args)
         if self.attributes is not None :
-            x: ir.CallInstr = func.function_type
-            x.addParamAttr(self.attributes)
-        return builder.call(func, args)
+            output.addParamAttr(self.attributes)
+        return output
