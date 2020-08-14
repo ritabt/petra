@@ -25,13 +25,14 @@ class Program(object):
         self.module = ir.Module(name=name)
         self.functypes: Dict[str, Tuple[Ftypein, Ftypeout]] = dict()
         self.funcs: Dict[str, ir.Function] = dict()
+        self.target_machine: binding.TargetMachine = None
 
     def add_func_decl(
         self, 
         name: str, 
         t_in: Ftypein, 
         t_out: Ftypeout,
-        attributes: Optional[Tuple[str, ...]] = None,
+        attributes: Optional[Tuple[Tuple[str, ...], ...]] = None,
         func_attributes: Optional[Tuple[str, ...]] = None,
     ) -> Program:
         if name in self.functypes:
@@ -45,9 +46,12 @@ class Program(object):
                 if attributes[i] is None:
                     continue
                 x: ir.Argument = self.funcs[name].args[i]
-                x.add_attribute(attributes[i])
-        # if func_attributes is not None:
-        #     self.funcs[name].attributes = func_attributes
+                for a in attributes[i]:
+                    x.add_attribute(a)
+        if func_attributes is not None:
+            for a in func_attributes:
+                if a is not None:
+                    self.funcs[name].attributes.add(a) 
         return self
 
     def add_func(
@@ -56,7 +60,7 @@ class Program(object):
         args: Tuple[Symbol, ...],
         t_out: Ftypeout,
         block: Block,
-        attributes: Optional[Tuple[str, ...]] = None,
+        attributes: Optional[Tuple[Tuple[str, ...], ...]] = None,
         func_attributes: Optional[Tuple[str, ...]] = None,
     ) -> Program:
         if name in self.functypes:
@@ -97,12 +101,16 @@ class Program(object):
         # FIXME: Not sure why MyPy can't type check this, maybe a bug
         target = binding.Target.from_default_triple()  # type: ignore
         target_machine = target.create_target_machine()
+        self.target_machine = target_machine
         print(self.to_llvm())
         backing_mod = binding.parse_assembly(self.to_llvm())
         engine = binding.create_mcjit_compiler(backing_mod, target_machine)
         engine.finalize_object()
         engine.run_static_constructors()
         return engine
+
+    def get_target_machine(self) -> binding.TargetMachine:
+        return self.target_machine
 
     def load_library(self, filename: str) -> None:
         binding.load_library_permanently(filename)
