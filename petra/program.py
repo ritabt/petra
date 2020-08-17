@@ -18,14 +18,10 @@ class Program(object):
     A Petra program. Petra programs can be codegen'ed to LLVM.
     """
 
-
-    llvm_initialized: bool = False
-
     def __init__(self, name: str):
         self.module = ir.Module(name=name)
         self.functypes: Dict[str, Tuple[Ftypein, Ftypeout]] = dict()
         self.funcs: Dict[str, ir.Function] = dict()
-        self.llvm_initialized = True
         binding.initialize()
         binding.initialize_native_target()
         binding.initialize_native_asmprinter()
@@ -97,8 +93,8 @@ class Program(object):
         engine.run_static_constructors()
         return engine
 
-    # def get_target_machine(self) -> binding.TargetMachine:
-    #     return self.target_machine
+    def get_target_machine(self):
+        return self.target_machine
 
     def load_library(self, filename: str) -> None:
         binding.load_library_permanently(filename)

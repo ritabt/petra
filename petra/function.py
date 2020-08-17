@@ -28,7 +28,7 @@ class Function(object):
         t_out: Ftypeout,
         block: Block,
         functypes: Dict[str, Tuple[Ftypein, Ftypeout]],
-        attributes: Optional[Tuple[str, ...]] = None,
+        attributes: Optional[Tuple[Tuple[str, ...], ...]] = None,
     ):
         self.name = name
         self.args = args
@@ -68,17 +68,15 @@ class Function(object):
         block = funcs[self.name].append_basic_block(name="start")
         builder = ir.IRBuilder(block)
         ctx = CodegenContext(funcs)
-        # Treat function arguments as variables declared at the beginning.
         for i, arg in enumerate(self.args):
             var = builder.alloca(arg.get_type().llvm_type(), name=arg.unique_name())
-            if self.attributes is not None and self.attributes[i] is not None:
-                # funcs[self.name].args[i].add_attribute(self.attributes[i])
+            if self.attributes is not None and i < len(self.attributes) and self.attributes[i] is not None:
                 x: ir.Argument = funcs[self.name].args[i]
-                x.add_attribute(self.attributes[i])
+                for a in self.attributes[i]:
+                    x.add_attribute(a)
             # FIXME: I'm not sure why I can't get this to type check
             builder.store(funcs[self.name].args[i], var)  # type: ignore
             ctx.vars[arg] = var
         self.block.codegen(builder, ctx)
 
 
-##add skipping attribute if none
