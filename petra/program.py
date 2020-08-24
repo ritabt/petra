@@ -25,7 +25,7 @@ class Program(object):
         binding.initialize()
         binding.initialize_native_target()
         binding.initialize_native_asmprinter()
-        target = binding.Target.from_default_triple()  
+        target: binding.Target = binding.Target.from_default_triple()  
         self.target_machine: binding.TargetMachine = target.create_target_machine()
 
     def add_func_decl(
@@ -73,7 +73,9 @@ class Program(object):
         )
         func = Function(name, args, t_out, block, self.functypes, attributes)
         if func_attributes is not None:
-            func.attributes = func_attributes
+            for a in func_attributes:
+                if a is not None:
+                    self.funcs[name].attributes.add(a) 
         func.codegen(self.module, self.funcs)
         return self
 
@@ -93,7 +95,7 @@ class Program(object):
         engine.run_static_constructors()
         return engine
 
-    def get_target_machine(self):
+    def get_target_machine(self) -> binding.TargetMachine:
         return self.target_machine
 
     def load_library(self, filename: str) -> None:
